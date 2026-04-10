@@ -1,0 +1,11 @@
+# Virtualenv
+.venv/
+venv/
+
+# Arquivos Python gerados
+__pycache__/
+*.py[cod]
+
+# Configuração local / segredos
+.env
+log.txt
