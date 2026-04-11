@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "ms-python.python",
+    "databricks.databricks",
+    "eamodio.gitlens",
+    "njpwerner.autodocstring"
+  ]
+}

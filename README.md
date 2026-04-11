@@ -9,7 +9,7 @@ Projeto de streaming com Python, Kafka e MongoDB, integrado com Databricks para 
   - `src/server/` — conectores e utilitários de backend (Kafka/MongoDB)
   - `src/common/` — módulos compartilhados e modelos
 - `tests/` — testes unitários e de integração
-- `Notebooks/databricks/` — notebooks Databricks para ETL e análise
+- `notebooks/databricks/` — notebooks Databricks para ETL e análise
 - `.vscode/` — configurações locais do VS Code
 - `databricks.yml` — configuração do Databricks bundle
 - `.env` — variáveis de ambiente locais (não commitadas)
@@ -26,7 +26,13 @@ pip install -r requirements.txt
 
 ## Variáveis de ambiente
 
-Crie um arquivo `.env` com as variáveis necessárias:
+Para a opção 1, crie um arquivo local `.env` copiando o modelo:
+
+```powershell
+copy .env.example .env
+```
+
+Preencha as credenciais:
 
 ```text
 KAFKA_BOOTSTRAP=
@@ -35,6 +41,10 @@ KAFKA_API_SECRET=
 KAFKA_TOPIC=orders.events
 MONGO_URI=
 ```
+
+No VS Code, o arquivo `.env` é carregado automaticamente pelo ambiente Python configurado em `.vscode/settings.json`.
+
+> Importante: não commit o arquivo `.env` no Git. Ele já está listado em `.gitignore`.
 
 ## Como rodar
 
@@ -59,6 +69,49 @@ MONGO_URI=
 ## Integração com Databricks
 
 O arquivo `databricks.yml` já configura o bundle para o workspace de desenvolvimento. Use a extensão Databricks do VS Code para deploy e execução em notebooks.
+
+### Conectar Databricks no VS Code
+
+1. Abra o painel de extensões (`Ctrl+Shift+X`) e instale as recomendações do projeto.
+2. Abra o Command Palette (`Ctrl+Shift+P`).
+3. Execute `Databricks: Configure Workspace`.
+4. Informe o `Host` do seu workspace e o token pessoal (PAT).
+5. Use o comando `Databricks: Deploy current file to Databricks` para enviar notebooks ou arquivos Python.
+
+No modo local, notebooks também podem carregar as variáveis do `.env` se você instalar e usar `python-dotenv`.
+
+### Fluxo recomendado
+
+- Edite localmente em `src/` e versionamento no Git.
+- Faça `git add`, `git commit` e `git push origin main` normalmente.
+- Mantenha os notebooks em `notebooks/databricks/` sincronizados com o workspace Databricks.
+- Prefira notebooks em formato `.py` com `# COMMAND ----------` para facilitar diffs e versionamento.
+- Use `notebooks/databricks/streaming_example.py` como exemplo de notebook versionado.
+
+### Versionando notebooks com Git
+
+- Garanta que os notebooks estejam sob controle de versão, não apenas no workspace Databricks.
+- Faça commit das alterações do notebook local antes de fazer deploy no Databricks.
+- Se editar diretamente no Databricks, sempre exporte ou sincronize o notebook de volta ao arquivo local.
+- O arquivo `.gitattributes` no projeto já adiciona suporte básico para `.ipynb` e garante que `Notebooks/databricks/` seja tratado como texto.
+- Não armazene credenciais diretamente no notebook. Use variáveis de ambiente locais ou `dbutils.secrets` no Databricks.
+
+### Notebook existente
+
+O notebook `notebooks/notebook-kafka.ipynb` já pode ser usado. Ele foi atualizado para carregar credenciais de:
+
+- variáveis de ambiente (`KAFKA_BOOTSTRAP`, `KAFKA_API_KEY`, `KAFKA_API_SECRET`)
+- ou `dbutils.secrets` no Databricks
+
+### Como executar módulos Python
+
+No terminal do projeto, use:
+
+```powershell
+python -m src.client.producer
+python -m src.server.kafka_health
+python -m src.server.mongo_health
+```
 
 ### Boas práticas
 

@@ -1,0 +1,8 @@
+# Treat notebooks as text for diffing when supported
+*.ipynb diff=jupyter
+
+# Ensure Python scripts use LF endings in Git
+*.py text eol=lf
+
+# Keep Databricks notebook scripts versioned
+notebooks/databricks/* text
