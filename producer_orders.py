@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from dotenv import load_dotenv
 from confluent_kafka import Producer
 
-load_dotenv()
+load_dotenv(dotenv_path=".env.producer")
 
 bootstrap = os.getenv("KAFKA_BOOTSTRAP")
 api_key = os.getenv("KAFKA_API_KEY")

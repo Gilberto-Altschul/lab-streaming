@@ -54,6 +54,12 @@ No VS Code, o arquivo `.env` é carregado automaticamente pelo ambiente Python c
   python producer_orders.py
   ```
 
+- Rodar consumidor Kafka → MongoDB:
+  ```powershell
+  .\.venv\Scripts\Activate.ps1
+  python -m src.server.consumer
+  ```
+
 - Testar conexão Kafka:
   ```powershell
   .\.venv\Scripts\Activate.ps1
@@ -103,6 +109,8 @@ O notebook `notebooks/notebook-kafka.ipynb` já pode ser usado. Ele foi atualiza
 - variáveis de ambiente (`KAFKA_BOOTSTRAP`, `KAFKA_API_KEY`, `KAFKA_API_SECRET`)
 - ou `dbutils.secrets` no Databricks
 
+Além disso, há um notebook Databricks em `notebooks/databricks/kafka_to_delta.py` que consome Kafka e grava os eventos em Delta Lake.
+
 ### Como executar módulos Python
 
 No terminal do projeto, use:
@@ -111,6 +119,50 @@ No terminal do projeto, use:
 python -m src.client.producer
 python -m src.server.kafka_health
 python -m src.server.mongo_health
+```
+
+### Executar localmente com Spark + Delta
+
+Se quiser rodar o pipeline Kafka → Delta localmente, use o script:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+spark-submit --packages org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.8,io.delta:delta-spark_2.12:3.0.0 src/server/kafka_delta_local.py
+```
+
+#### Instalação Windows para Spark + Delta
+
+No Windows, o Delta pode precisar de binários nativos do Hadoop (como `winutils.exe` e `hadoop.dll`) para acessar diretórios locais.
+
+1. Instale uma build compatível de Hadoop 3.x para Windows.
+2. Coloque os binários em `C:\hadoop\bin` ou em outro diretório de sua escolha.
+3. Defina as variáveis de ambiente:
+
+```powershell
+setx HADOOP_HOME "C:\hadoop"
+setx PATH "$env:PATH;C:\hadoop\bin"
+```
+
+4. Verifique em um novo terminal:
+
+```powershell
+echo $env:HADOOP_HOME
+where.exe winutils.exe
+```
+
+5. Execute o `spark-submit` novamente.
+
+Se preferir, use o helper PowerShell em `scripts\setup-hadoop-windows.ps1` para validar a instalação.
+
+Antes de executar, defina as credenciais no `.env` ou no ambiente:
+
+```text
+KAFKA_BOOTSTRAP=
+KAFKA_API_KEY=
+KAFKA_API_SECRET=
+KAFKA_TOPIC=orders.events
+DELTA_PATH=file:///tmp/kafka_orders_delta
+DELTA_CHECKPOINT=file:///tmp/kafka_orders_delta_checkpoint
 ```
 
 ### Boas práticas

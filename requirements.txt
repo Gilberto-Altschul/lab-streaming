@@ -2,3 +2,4 @@ python-dotenv
 confluent-kafka
 pymongo
 pytest
+pyspark
