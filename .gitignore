@@ -7,6 +7,6 @@ __pycache__/
 *.py[cod]
 
 # Configuração local / segredos
-.env
+.env*
 log.txt
 .databricks
